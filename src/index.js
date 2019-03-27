@@ -1,36 +1,37 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import * as serviceWorker from './serviceWorker';
+const Unzip = require('isomorphic-unzip');
 
-const ImportFromFileBodyComponent = () => {
-    let fileReader;
 
-    const handleFileRead = (e) => {
-        const content = fileReader.result;
-        console.log(content);
-        // … do something with the 'content' …
-    };
+const FNAME = 'meta.json';
 
-    const handleFileChosen = (file) => {
-        fileReader = new FileReader();
-        fileReader.onloadend = handleFileRead;
-        fileReader.readAsBinaryString(file);
-    };
 
+function readBuffer (err, buffers) {
+	if (err) throw err;
+	const res = buffers[FNAME].toString();
+	let json;
+	try { json = JSON.parse(res); }
+	catch (e) {}
+	console.log(json);
+}
+
+function handleFileChosen (file) {
+	const unzip = new Unzip(file, {type: 'application/zip'});
+	unzip.getBuffer([FNAME], {}, readBuffer);
+};
+
+
+
+function ImportFromFileBodyComponent () {
     return <div className='upload-expense'>
         <input type='file'
-               id='file'
-               className='input-file'
-               accept='.sketch'
-               onChange={e => handleFileChosen(e.target.files[0])}
+            id='file'
+            className='input-file'
+            accept='.sketch'
+            onChange={e => handleFileChosen(e.target.files[0])}
         />
     </div>;
 };
 
 ReactDOM.render(<ImportFromFileBodyComponent />, document.getElementById('root'));
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
