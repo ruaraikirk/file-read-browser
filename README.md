@@ -1,4 +1,4 @@
-## Available Scripts
+## Sketch file read, validation and upload...
 
 Sandbox project for looking into methods of reading and validating sketch files in-browser prior to upload.
 
