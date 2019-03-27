@@ -9,7 +9,7 @@ const appValue = 'com.bohemiancoding.sketch3';
 function validateFile(sketchMetaJson) {
     // Validation - overkill? correct point to carry out this sort of check?
     const [a] = Object.values(sketchMetaJson.pagesAndArtboards).filter(f => f.name === 'Symbols');
-    console.log("Symbols Page: ", a, sketchMetaJson.app);
+    console.log("Symbols Page: ", a);
     console.log("App: ", sketchMetaJson.app);
     if (Object.values(a).indexOf('Symbols') > -1 && `${sketchMetaJson.app}` === appValue) { 
         console.log('This file is valid.'); 
