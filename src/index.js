@@ -8,17 +8,17 @@ const FNAME = 'meta.json';
 
 
 function readBuffer (err, buffers) {
-	if (err) throw err;
-	const res = buffers[FNAME].toString();
-	let json;
-	try { json = JSON.parse(res); }
-	catch (e) {}
-	console.log(json);
+    if (err) throw err;
+    const res = buffers[FNAME].toString();
+    let json;
+    try { json = JSON.parse(res); }
+    catch (e) {}
+    console.log(json);
 }
 
 function handleFileChosen (file) {
-	const unzip = new Unzip(file, {type: 'application/zip'});
-	unzip.getBuffer([FNAME], {}, readBuffer);
+    const unzip = new Unzip(file, {type: 'application/zip'});
+    unzip.getBuffer([FNAME], {}, readBuffer);
 };
 
 
