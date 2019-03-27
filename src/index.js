@@ -3,25 +3,24 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const ImportFromFileBodyComponent = () => {
-    let fileReader;
+import ZipLoader from 'zip-loader';
 
-    const handleFileRead = (e) => {
-        const content = fileReader.result;
-        console.log(content);
-        // … do something with the 'content' …
-    };
+const ImportFromFileBodyComponent = () => {
 
     const handleFileChosen = (file) => {
-        fileReader = new FileReader();
-        fileReader.onloadend = handleFileRead;
-        fileReader.readAsBinaryString(file);
+        // Prints all files directly to console as objects
+        ZipLoader.unzip( file ).then( function ( ZipLoaderInstance ) {
+ 
+            console.log( ZipLoaderInstance.files );
+            // Extracts json file and prints to console.
+            const json = ZipLoaderInstance.extractAsJSON('meta.json');
+            console.log(json)   
+          } );
     };
 
-    return <div className='upload-expense'>
+    return <div>
         <input type='file'
                id='file'
-               className='input-file'
                accept='.sketch'
                onChange={e => handleFileChosen(e.target.files[0])}
         />
@@ -29,8 +28,3 @@ const ImportFromFileBodyComponent = () => {
 };
 
 ReactDOM.render(<ImportFromFileBodyComponent />, document.getElementById('root'));
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
