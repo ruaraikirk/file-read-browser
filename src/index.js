@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import Unzip from 'isomorphic-unzip';
+//const Unzip = require('isomorphic-unzip');
 
 const ImportFromFileBodyComponent = () => {
     let fileReader;
@@ -13,9 +15,16 @@ const ImportFromFileBodyComponent = () => {
     };
 
     const handleFileChosen = (file) => {
-        fileReader = new FileReader();
+        /*fileReader = new FileReader();
         fileReader.onloadend = handleFileRead;
-        fileReader.readAsBinaryString(file);
+        fileReader.readAsBinaryString(file);*/
+        const unzip = new Unzip(file);
+        // The following code causes "TypeError: callback is not a function" error...
+        unzip.getBuffer(['meta.json', 'document.json'], function(err, buffers) {
+            if(err) throw err;  
+            // buffers it's like {'meta.json': Buffer, 'document.json': Buffer}
+            console.log(buffers);
+          });
     };
 
     return <div className='upload-expense'>
