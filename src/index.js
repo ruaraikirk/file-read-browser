@@ -4,37 +4,36 @@ import './index.css';
 const Unzip = require('isomorphic-unzip');
 
 const FNAME = 'meta.json';
-const appValue = 'com.bohemiancoding.sketch3';
-
-function validateFile(sketchMetaJson) {
-    // Validation - overkill? correct point to carry out this sort of check?
-    const [a] = Object.values(sketchMetaJson.pagesAndArtboards).filter(f => f.name === 'Symbols');
-    console.log("Symbols Page: ", a);
-    console.log("App: ", sketchMetaJson.app);
-    if (Object.values(a).indexOf('Symbols') > -1 && `${sketchMetaJson.app}` === appValue) { 
-        console.log('This file is valid.'); 
-        document.getElementById('submit').disabled = false;
-    } else { // Need to test with some invalid or 'unacceptable' .sketch files
-        console.log('Sorry, this file appears to be invalid, please select a valid file.');
-        document.getElementById('submit').disabled = true;
-    }
-}
 
 function readBuffer (err, buffers) {
     if (err) throw err;
-    const res = buffers[FNAME].toString();
-    let json;
-    try { 
+    try { // Unzip file and if check it contains a meta.json file
+        const res = buffers[FNAME].toString(); 
+        //console.log(res);
+        let json;
         json = JSON.parse(res);
         console.log("Sketch file meta.json: ", json);
-        validateFile(json);
+        document.getElementById('submit').disabled = false;
+    } catch (e) { // File unzips, but does not contain a meta.son file
+        console.error('Debug #2: ', e);
+        alert(`Oops! This isn't a valid Sketch file...
+        Please select a valid Sketch file to upload.`);
+        document.getElementById('submit').disabled = true;
     }
-    catch (e) {}
 };
 
 function handleFileChosen (file) {
-    const unzip = new Unzip(file, {type: 'application/zip'});
-    unzip.getBuffer([FNAME], {}, readBuffer);
+    try{
+        const unzip = new Unzip(file, {type: 'application/zip'});
+        console.log(typeof unzip);
+        console.log(unzip);
+        unzip.getBuffer([FNAME], {}, readBuffer);
+    } catch (e) { // User opens 'Choose File' dialog, but presses 'Cancel' (i.e. e.target.files[0] == undefined)
+        console.log('Cancel:', e)
+        alert('No file chosen!')
+        document.getElementById('submit').disabled = true;
+    }
+
 };
 
 function ImportFromFileBodyComponent () {
@@ -49,7 +48,7 @@ function ImportFromFileBodyComponent () {
             id='submit'
             name='Upload'
             disabled='disabled'
-            // onSubmit= call some function to render file name/thumbnail image in CMS and upload file to GitHub?
+            //onClick= Call some function to render file name/thumbnail image in CMS and upload file to GitHub.
         />
     </div>;
 };
