@@ -7,33 +7,32 @@ const FNAME = 'meta.json';
 
 function readBuffer (err, buffers) {
     if (err) throw err;
-    try { // Unzip file and if check it contains a meta.json file
-        const res = buffers[FNAME].toString(); 
-        //console.log(res);
+    try { // Unzip file and if check it contains a meta.json file (i.e file is likely valid)
+        const res = buffers[FNAME].toString();
         let json;
         json = JSON.parse(res);
         console.log("Sketch file meta.json: ", json);
-        document.getElementById('submit').disabled = false;
-    } catch (e) { // File unzips, but does not contain a meta.son file
+        document.getElementById('submit').disabled = false; // Enable Submit (upload) button as file is likely valid
+    } catch (e) { // File unzips, but does not contain a meta.son file (i.e. file invalid)
         console.error('Debug #2: ', e);
-        alert(`Oops! This isn't a valid Sketch file...
-        Please select a valid Sketch file to upload.`);
+        alert(`Oops! This isn't a valid Sketch file... Please select a valid Sketch file to upload.`);
         document.getElementById('submit').disabled = true;
     }
 };
 
 function handleFileChosen (file) {
     try{
+        console.log(file);
         const unzip = new Unzip(file, {type: 'application/zip'});
         console.log(typeof unzip);
         console.log(unzip);
-        unzip.getBuffer([FNAME], {}, readBuffer);
-    } catch (e) { // User opens 'Choose File' dialog, but presses 'Cancel' (i.e. e.target.files[0] == undefined)
+        unzip.getBuffer([FNAME], {}, readBuffer); // TODO: deal with 'File format is not recognized.' error
+    } catch (e) { /* User opens 'Choose File' dialog, but presses 'Cancel' 
+    (i.e. the value of 'e.target.files[0]' changes to 'undefined' and causes error) */
         console.log('Cancel:', e)
         alert('No file chosen!')
         document.getElementById('submit').disabled = true;
     }
-
 };
 
 function ImportFromFileBodyComponent () {
