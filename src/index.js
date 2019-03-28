@@ -4,37 +4,35 @@ import './index.css';
 const Unzip = require('isomorphic-unzip');
 
 const FNAME = 'meta.json';
-const appValue = 'com.bohemiancoding.sketch3';
-
-function validateFile(sketchMetaJson) {
-    // Validation - overkill? correct point to carry out this sort of check?
-    const [a] = Object.values(sketchMetaJson.pagesAndArtboards).filter(f => f.name === 'Symbols');
-    console.log("Symbols Page: ", a);
-    console.log("App: ", sketchMetaJson.app);
-    if (Object.values(a).indexOf('Symbols') > -1 && `${sketchMetaJson.app}` === appValue) { 
-        console.log('This file is valid.'); 
-        document.getElementById('submit').disabled = false;
-    } else { // Need to test with some invalid or 'unacceptable' .sketch files
-        console.log('Sorry, this file appears to be invalid, please select a valid file.');
-        document.getElementById('submit').disabled = true;
-    }
-}
 
 function readBuffer (err, buffers) {
     if (err) throw err;
-    const res = buffers[FNAME].toString();
-    let json;
-    try { 
+    try { // Unzip file and if check it contains a meta.json file (i.e file is likely valid)
+        const res = buffers[FNAME].toString();
+        let json;
         json = JSON.parse(res);
         console.log("Sketch file meta.json: ", json);
-        validateFile(json);
+        document.getElementById('submit').disabled = false; // Enable Submit (upload) button as file is likely valid
+    } catch (e) { // File unzips, but does not contain a meta.son file (i.e. file invalid)
+        console.error('Debug #2: ', e);
+        alert(`Oops! This isn't a valid Sketch file... Please select a valid Sketch file to upload.`);
+        document.getElementById('submit').disabled = true;
     }
-    catch (e) {}
 };
 
 function handleFileChosen (file) {
-    const unzip = new Unzip(file, {type: 'application/zip'});
-    unzip.getBuffer([FNAME], {}, readBuffer);
+    try{
+        console.log(file);
+        const unzip = new Unzip(file, {type: 'application/zip'});
+        console.log(typeof unzip);
+        console.log(unzip);
+        unzip.getBuffer([FNAME], {}, readBuffer); // TODO: deal with 'File format is not recognized.' error
+    } catch (e) { /* User opens 'Choose File' dialog, but presses 'Cancel' 
+    (i.e. the value of 'e.target.files[0]' changes to 'undefined' and causes error) */
+        console.log('Cancel:', e)
+        alert('No file chosen!')
+        document.getElementById('submit').disabled = true;
+    }
 };
 
 function ImportFromFileBodyComponent () {
@@ -49,7 +47,7 @@ function ImportFromFileBodyComponent () {
             id='submit'
             name='Upload'
             disabled='disabled'
-            // onSubmit= call some function to render file name/thumbnail image in CMS and upload file to GitHub?
+            //onClick= Call some function to render file name/thumbnail image in CMS and upload file to GitHub.
         />
     </div>;
 };
