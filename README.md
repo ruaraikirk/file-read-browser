@@ -1,3 +1,7 @@
+## Sketch file read, validation and upload...
+
+Sandbox project for looking into methods of reading and validating sketch files in-browser prior to upload.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
