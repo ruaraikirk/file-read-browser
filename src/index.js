@@ -8,17 +8,17 @@ const fileCheck = 'meta.json';
 const ImportFromFileBodyComponent = () => {
 
     const handleFileChosen = (file) => {
-        console.log('Debug#1: ', file);
+        console.log('Object from input: ', file);
         if (file === undefined) { // If user opens file selection dialog, but hits 'Cancel'
             document.getElementById('submit').disabled = true;
         } else {
-            ZipLoader.unzip( file ).then( function ( ZipLoaderInstance ) {
-                console.log( ZipLoaderInstance.files );
-                try { // Unzip file and if check it contains a meta.json file (i.e file is likely valid)
+            ZipLoader.unzip( file ).then( function ( ZipLoaderInstance ) { // Unzip and return object containing contents
+                console.log('Unzipped object: ', ZipLoaderInstance.files );
+                try { // Check it object contains a meta.json file (i.e selected file is likely valid)
                     const json = ZipLoaderInstance.extractAsJSON(fileCheck);
                     console.log("Sketch file meta.json: ", json);
                     document.getElementById('submit').disabled = false; // Enable Submit (upload) button as file is likely valid
-                } catch (e) { // File unzips, but does not contain a meta.son file (i.e. file invalid)
+                } catch (e) { // File unzips, but does not contain a meta.son file (i.e. file invalid), or is garbage
                     console.log('meta.son is not present: ', e)
                     alert(`Oops! This isn't a valid Sketch file... Please select a valid Sketch file to upload.`);
                     document.getElementById('submit').disabled = true;
